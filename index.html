@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+    <style>
+        #brewMap {
+            height: 500px;
+        }
+    </style>
+    <title>Washington brewery locator and mapper</title>
+</head>
+<body>
+
+    <h2>Washington State brewery locations</h2>
+    
+    <p id="data">
+    </p>
+
+    <div id="brewMap">
+
+    </div>
+
+    <script>
+
+        //build leaflet map
+        const wamap = L.map('brewMap').setView([47.30, -120.00], 7);
+
+        //custom icon
+        var brewIcon = L.icon({
+            iconUrl: 'brewery.png',
+            iconSize:     [30, 30],
+            iconAnchor:   [15, 15] 
+        });
+
+
+        const attribution = 
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+        //openstreetmap tile setup
+        const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        const tiles = L.tileLayer(tileUrl, { attribution });
+        tiles.addTo(wamap);
+
+        //api endpoint for WA state breweries, information provided by openbrewerydb API
+        const brewery_api = 'https://api.openbrewerydb.org/breweries?by_state=washington'
+
+        async function getBreweryLocations() {
+            const response = await fetch(brewery_api);
+            const info = await response.json();
+            
+            var txt = "";
+            
+            //loop through 2d array of brewery objects
+            for(let i = 0; i < info.length; i++) {
+                const { name, latitude, longitude } = info[i];
+
+                L.marker([latitude, longitude] , { icon: brewIcon }).addTo(wamap).bindPopup(name);
+
+                txt += "<b>" + name + "</b>" + "<br />" + "latitude: " + latitude + " " + "longitude: " + longitude + "<br />";
+                
+                console.log(name);
+                console.log(latitude);
+                console.log(longitude);
+            }
+
+            document.getElementById("data").innerHTML = txt; 
+        }
+
+        getBreweryLocations();  
+    </script>
+    
+</body>
+</html>
+
