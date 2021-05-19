@@ -62,13 +62,17 @@
             for(let i = 0; i < info.length; i++) {
                 const { name, latitude, longitude } = info[i];
 
-                L.marker([latitude, longitude] , { icon: brewIcon }).addTo(wamap).bindPopup(name);
+                if(latitude != null && longitude != null) {
 
-                txt += "<b>" + name + "</b>" + "<br />" + "latitude: " + latitude + " " + "longitude: " + longitude + "<br />";
+                   L.marker([latitude, longitude] , { icon: brewIcon }).addTo(wamap).bindPopup(name);
+
+                    txt += "<b>" + name + "</b>" + "<br />" + "latitude: " + latitude + " " + "longitude: " + longitude + "<br />";
                 
-                console.log(name);
-                console.log(latitude);
-                console.log(longitude);
+                    console.log(name);
+                    console.log(latitude);
+                    console.log(longitude);
+                }
+
             }
 
             document.getElementById("data").innerHTML = txt; 
